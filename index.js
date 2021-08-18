@@ -1,18 +1,7 @@
 
 const delimiter = " "
 
-function cssModule(...styles) {
-
-	const createCss = cname => {
-		const [isLocal, name] = cname.split("$")
-		if(name) {
-			return name
-		} else {
-			const result = styles.map(style => typeof style === "object" ? styles[cname] || cname : cname)
-			return result.join(delimiter)
-		}
-	}
-
+function dismantleCss(params, createCss) {
 	const transformCss = (params) => {
 		if(typeof params === "string") {
 			return params.replace(/(\$?[\w-]+)/g, createCss)
@@ -26,11 +15,40 @@ function cssModule(...styles) {
 			return ""
 		}
 	}
+	return transformCss(params)
+}
+
+// @params classname: string
+function filterCss(classname) {
+	const arr = classname.split(delimiter)
+	const result = arr.filter((val,index,arr) => arr.indexOf(val) === index)
+	return result.join(" ")
+}
+
+export function classnames(params) {
+	const createCss = cname => {
+		const [isLocal, name] = cname.split("$")
+		return name
+	}
+	const data = transformCss(params, createCss)
+	return filterCss(data)
+}
+
+function cssModule(...styles) {
+
+	const createCss = cname => {
+		const [isLocal, name] = cname.split("$")
+		if(name) {
+			return name
+		} else {
+			const result = styles.map(style => typeof style === "object" ? styles[cname] || cname : cname)
+			return result.join(delimiter)
+		}
+	}
 
 	const init = (...params) => {
-		const data = transformCss(params).split(delimiter)
-		const result = data.filter((val,index,arr) => arr.indexOf(val) === index)
-		return result.join(" ")
+		const data = dismantleCss(params, createCss)
+		return filterCss(data)
 	}
 
 	return init
