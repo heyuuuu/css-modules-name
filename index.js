@@ -1,11 +1,15 @@
-function cssModule(styles) {
+
+const delimiter = " "
+
+function cssModule(...styles) {
 
 	const createCss = cname => {
 		const [isLocal, name] = cname.split("$")
 		if(name) {
 			return name
 		} else {
-			return typeof styles === "object" ? styles[cname] || cname : cname
+			const result = styles.map(style => typeof style === "object" ? styles[cname] || cname : cname)
+			return result.join(delimiter)
 		}
 	}
 
@@ -14,7 +18,7 @@ function cssModule(styles) {
 			return params.replace(/(\$?[\w-]+)/g, createCss)
 		}else if(params instanceof Array) {
 			const data = params.map(val => transformCss(val))
-			return data.join(" ")
+			return data.join(delimiter)
 		}else if(typeof params === "object") {
 			const data = Object.keys(params).map(name => params[name] ? name : "")
 			return transformCss(data)
@@ -24,7 +28,7 @@ function cssModule(styles) {
 	}
 
 	const init = (...params) => {
-		const data = transformCss(params).split(" ")
+		const data = transformCss(params).split(delimiter)
 		const result = data.filter((val,index,arr) => arr.indexOf(val) === index)
 		return result.join(" ")
 	}
