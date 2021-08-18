@@ -21,16 +21,20 @@ function dismantleCss(params, createCss) {
 // @params classname: string
 function filterCss(classname) {
 	const arr = classname.split(delimiter)
-	const result = arr.filter((val,index,arr) => arr.indexOf(val) === index)
+	const result = arr.filter((val,index,arr) => {
+		if(val) {
+			return arr.indexOf(val) === index
+		}
+	})
 	return result.join(" ")
 }
 
-export function classnames(params) {
+export function classnames(...params) {
 	const createCss = cname => {
 		const [isLocal, name] = cname.split("$")
-		return name
+		return name ? name : cname
 	}
-	const data = transformCss(params, createCss)
+	const data = dismantleCss(params, createCss)
 	return filterCss(data)
 }
 
