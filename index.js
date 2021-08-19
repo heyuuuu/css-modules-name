@@ -45,7 +45,7 @@ function cssModule(...styles) {
 		if(name) {
 			return name
 		} else {
-			const result = styles.map(style => typeof style === "object" ? styles[cname] || cname : cname)
+			const result = styles.map(style => typeof style === "object" ? style[cname] || cname : cname)
 			return result.join(delimiter)
 		}
 	}
