@@ -1,10 +1,11 @@
 {
   "name": "css-modules-name",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "基于css-loader(modules)",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/heyuuuu/css-modules-name/issues"
   },
-  "homepage": "https://github.com/heyuuuu/css-modules-name#readme"
+  "homepage": "https://github.com/heyuuuu/css-modules-name#readme",
+  "devDependencies": {
+    "typescript": "^4.5.4"
+  }
 }
