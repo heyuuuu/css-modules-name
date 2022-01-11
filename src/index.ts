@@ -4,11 +4,27 @@ const preGlobal: string = "$"
 type BaseTYPE = string | object | undefined
 type ParamsTYPE = BaseTYPE | BaseTYPE[]
 
-function dismantleCss(params: ParamsTYPE[], transformName: (name: string) => string) {
+// 去除重复
+function exrepeat(params: string[]) {
+	// return [...new Set(params)]
+	return params.filter((val, index, arr) => val ? arr.indexOf(val) === index : false)
+}
+
+// 处理成局部样式
+function handlePrivateClassname(params: string[]) {
+	return exrepeat(params.map(val => val.replace(preGlobal, ""))).join(delimiter)
+}
+
+// 处理成全局样式
+function handlePublicClassname(params: string[]) {
+	
+}
+
+function dismantleCss(params: ParamsTYPE[]) {
 
     const transformCss = (params: ParamsTYPE): string => {
         if(typeof params === "string") {
-            return params.replace(/(\$?[\w-]+)/g, name => transformName(name))
+			return params
         }
         if(params instanceof Array) {
             return params.map(name => transformCss(name)).join(delimiter)
@@ -19,56 +35,46 @@ function dismantleCss(params: ParamsTYPE[], transformName: (name: string) => str
         return delimiter
     }
 
-	const names: string[] = []
+	const classname = exrepeat(transformCss(params).split(/\s/g))
 
-    transformCss(params).split(delimiter).map(name => {
-		if(name && names.indexOf(name) === -1) {
-			names.push(name)
-		}
-	})
-
-	return names.join(delimiter)
-
-}
-
-function createCssModules(modules?: ParamsTYPE) {
-	const Modules: object[] = []
-	const transModules = (modules?: ParamsTYPE) => {
-		if(modules instanceof Array) {
-			modules.map(module => transModules(module))
-		}
-		if(typeof modules === "object") {
-			Modules.push(modules)
-		}
-	}
-	transModules(modules)
-	return Modules
+	return classname
 }
 
 function classnames(...args: ParamsTYPE[]) {
-	const createCss = (cname: string) => {
-		const [isLocal, name] = cname.split(preGlobal)
-		return name ? name : cname
-	}
-	return dismantleCss(args, createCss)
+	return handlePrivateClassname(dismantleCss(args))
 }
 
-function cssModule(params: ParamsTYPE) {
+interface CssModuleConfig {
+	scope?: boolean // 是否开启局部作用域限制
+}
 
-	const modules = createCssModules(params)
+function cssModule(params: ParamsTYPE, config: CssModuleConfig = {}) {
 
-	const createCss = (cname: string) => {
-		const [isLocal, name] = cname.split(preGlobal)
-		if(name) {
-			return name
-		} else {
-			const result = modules.map(style => style[cname] || cname)
-			return result.join(delimiter)
-		}
-	}
+	const modules =  params instanceof Array ? params : [params]
 
 	const classnames = (...args: ParamsTYPE[]) => {
-		return dismantleCss(args, createCss)
+
+		let classname: string[] = []
+
+		const arr = dismantleCss(args).map(name => {
+			if(/^\$/.test(name)) {
+				classname.push(name)
+			} else {
+				modules.map(module => {
+					if(typeof module == "object" && module[name]) {
+						classname.push(module[name])
+					}
+				})
+			}
+			return name
+		})
+
+		if(!config.scope) {
+			classname = classname.concat(arr)
+		}
+
+		return handlePrivateClassname(classname)
+
 	}
 	return classnames
 }
