@@ -15,7 +15,7 @@
     }
 ```
 
-# cssModules(string | object | Array(string | object))
+# cssModules(styles: string | object | Array(string | object), config: {strict?: boolean})
 
 ```
 import cssModules from "css-modules-name"

@@ -4,6 +4,12 @@ const preGlobal: string = "$"
 type BaseTYPE = string | object | undefined
 type ParamsTYPE = BaseTYPE | BaseTYPE[]
 
+const tools = {
+	toArray: (name: string) => name.match(/(\$?[\w\-]+)/g) || [],
+	toString: (names: string[]) => names.join(delimiter),
+	toNormal: (names: string[]) => names.map(name => name.replace(preGlobal, ''))
+}
+
 // 去除重复
 function exrepeat(params: string[]) {
 	// return [...new Set(params)]
@@ -11,8 +17,9 @@ function exrepeat(params: string[]) {
 }
 
 // 处理成局部样式
-function handlePrivateClassname(params: string[]) {
-	return exrepeat(params.map(val => val.replace(preGlobal, ""))).join(delimiter)
+function handlePrivateClassname(params: string[] | string) {
+	const names = params instanceof Array ? params : tools.toArray(params)
+	return tools.toString(exrepeat(tools.toNormal(names)))
 }
 
 // 处理成全局样式
@@ -27,15 +34,15 @@ function dismantleCss(params: ParamsTYPE[]) {
 			return params
         }
         if(params instanceof Array) {
-            return params.map(name => transformCss(name)).join(delimiter)
+            return tools.toString(params.map(name => transformCss(name)))
         }
         if(typeof params === "object") {
-            return Object.keys(params).map(name => params[name] ? transformCss(name) : delimiter).join(delimiter)
+            return tools.toString(Object.keys(params).map(name => params[name] ? transformCss(name) : delimiter))
         }
         return delimiter
     }
 
-	const classname = exrepeat(transformCss(params).split(/\s/g))
+	const classname = exrepeat(tools.toArray(transformCss(params)))
 
 	return classname
 }
@@ -45,7 +52,7 @@ function classnames(...args: ParamsTYPE[]) {
 }
 
 interface CssModuleConfig {
-	scope?: boolean // 是否开启局部作用域限制
+	strict?: boolean // 是否严格模式，严格模式下未找到的局部变量将被删除
 }
 
 function cssModule(params: ParamsTYPE, config: CssModuleConfig = {}) {
@@ -56,7 +63,9 @@ function cssModule(params: ParamsTYPE, config: CssModuleConfig = {}) {
 
 		let classname: string[] = []
 
-		const arr = dismantleCss(args).map(name => {
+		const names = dismantleCss(args)
+
+		names.map(name => {
 			if(/^\$/.test(name)) {
 				classname.push(name)
 			} else {
@@ -66,11 +75,10 @@ function cssModule(params: ParamsTYPE, config: CssModuleConfig = {}) {
 					}
 				})
 			}
-			return name
 		})
 
-		if(!config.scope) {
-			classname = classname.concat(arr)
+		if(!config.strict) {
+			classname = classname.concat(names)
 		}
 
 		return handlePrivateClassname(classname)
