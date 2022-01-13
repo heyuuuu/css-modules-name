@@ -3,21 +3,22 @@ const preGlobal: string = "$"
 
 type BaseTYPE = string | object
 type ParamsTYPE = BaseTYPE | BaseTYPE[]
+type ClassNamesTYPE = string[]
 
 const tools = {
 	toArray: (name: string) => name.split(/\s+/),
-	toString: (names: string[]) => names.join(delimiter),
-	toNormal: (names: string[]) => names.map(name => name.replace(preGlobal, ''))
+	toString: (names: ClassNamesTYPE) => names.join(delimiter),
+	toNormal: (names: ClassNamesTYPE) => names.map(name => name.replace(preGlobal, ''))
 }
 
 // 去除重复
-function exrepeat(params: string[]) {
+function exrepeat(params: ClassNamesTYPE): ClassNamesTYPE {
 	// return [...new Set(params)]
 	return params.filter((val, index, arr) => val ? arr.indexOf(val) === index : false)
 }
 
 // 处理成局部样式
-function handlePrivateClassname(params: string[] | string) {
+function handlePrivateClassname(params: ClassNamesTYPE | string) {
 	const names = params instanceof Array ? params : tools.toArray(params)
 	return tools.toString(exrepeat(tools.toNormal(names)))
 }
@@ -27,8 +28,8 @@ function handlePublicClassname(params: string[]) {
 	
 }
 
-// 处理module-name
-function handleModules(params: string[],modules: (string | object)[]) {
+// 将name转换为modules中对应的键值
+function handleModules(params: ClassNamesTYPE,modules: (string | object)[]) {
 
 	const classname: string[] = []
 
@@ -48,11 +49,11 @@ function handleModules(params: string[],modules: (string | object)[]) {
 }
 
 // 处理alias
-function handleAlias(params: string[], alias?: object) {
-	return params.map(name => name.replace(/\{(\w+)\}/,(_, name) => alias?.[name] || name))
+function handleAlias(params: ClassNamesTYPE, alias?: object) {
+	return params.map(name => name.replace(/\{(\w+)\}/,(_, name) => alias ? alias[name] || name : name))
 }
 
-// 重组classnames
+// 将classname转换为classname[]
 function dismantleCss(params: ParamsTYPE[]) {
 
     const transformCss = (params: ParamsTYPE): string => {
@@ -87,7 +88,6 @@ function cssModule(params: ParamsTYPE, config: CssModuleConfig = {}) {
 	const modules =  params instanceof Array ? params : [params]
 
 	const classnames = (...args: ParamsTYPE[]) => {
-
 
 		const names = handleAlias(dismantleCss(args))
 		let classname = handleModules(names, modules)
