@@ -65,7 +65,7 @@ function transformCssmodule(classnames: CssModuleSpace.NamePrototype[], modules:
 	
 	classnames.forEach(item => {
 		if(alias) {
-			item.name = item.name.replace(/\{(\w)\}/g, (_, name) => alias[name] || name)
+			item.name = item.name.replace(/\{(\w+)\}/g, (_, name) => alias[name] || name)
 		}
 		const value = modules[item.name]
 		if(value) {
