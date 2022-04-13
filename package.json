@@ -1,6 +1,6 @@
 {
   "name": "css-modules-name",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "基于css-loader(modules)",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

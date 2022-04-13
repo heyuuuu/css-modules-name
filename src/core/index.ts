@@ -27,7 +27,7 @@ function createType (name: string):CssModuleSpace.NamePrototype {
 		result.name = LockValue
 	}
 	// $name 全局样式
-	const [isGlogal, GlobalValue] = result.name.match(/^\$(\w+)/) || []
+	const [isGlogal, GlobalValue] = result.name.match(/^\$([\w\-]+)/) || []
 	if(isGlogal) {
 		result.isGlobal = true
 		result.name = GlobalValue
