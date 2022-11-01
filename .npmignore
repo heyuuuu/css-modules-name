@@ -1,7 +1,3 @@
 node_modules/
-src/demo/
-types/
-tsconfig.build.json
 tsconfig.sjon
-webpack.dev.js
 yarn.lock

@@ -1,12 +1,11 @@
 {
   "name": "css-modules-name",
-  "version": "0.1.0",
-  "description": "基于css-loader(modules)",
+  "version": "1.0.0",
+  "description": "css-modules-name",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
-    "start": "webpack-dev-server --config webpack.dev"
+    "build": "tsc --project tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -19,21 +18,6 @@
   },
   "homepage": "https://github.com/heyuuuu/css-modules-name#readme",
   "devDependencies": {
-    "typescript": "^4.5.4",
-    "css-loader": "^6.5.1",
-    "html-webpack-plugin": "^5.5.0",
-    "less": "^4.1.2",
-    "less-loader": "^10.2.0",
-    "mini-css-extract-plugin": "^2.4.5",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "ts-loader": "^9.2.6",
-    "webpack": "^5.65.0",
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
-    "@types/react": "^17.0.38",
-    "@types/react-dom": "^17.0.11",
-    "react-refresh": "^0.11.0",
-    "webpack-cli": "^4.9.1",
-    "webpack-dev-server": "^4.7.1"
+    "typescript": "^4.5.4"
   }
 }
